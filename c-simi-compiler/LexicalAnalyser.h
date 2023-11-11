@@ -71,5 +71,5 @@ private:
 	void inputFile(string file_name);
 public:
 	void lexicalAnalyser(string file_name);
-	void outputToFile(string file_src);
+	bool outputToFile(string file_src);
 };

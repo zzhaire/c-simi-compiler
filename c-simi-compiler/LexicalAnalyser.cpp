@@ -134,6 +134,7 @@ void Lexer::buildNFA(string grammer_file)
 		else
 			transfer_states[left][right[0]].insert(FINAL_STATE);
 	}
+	in.close();
 }
 void Lexer::convertToDFA()	// 使用子集构造法转为DFA
 {
@@ -145,7 +146,7 @@ void Lexer::convertToDFA()	// 使用子集构造法转为DFA
 	now_state.insert(DFA_start_state);	// 得到初始状态的克林闭包
 	now_state = getEpsilonClosure(now_state);
 	state_queue.push(now_state);
-	DFA_states[DFA_states_n] = now_state;
+	DFA_states[DFA_states_n++] = now_state;
 
 	if (isFinalState(now_state))
 		DFA_is_final[DFA_states_n - 1] = true;
@@ -301,6 +302,7 @@ void Lexer::inputFile(string file_name)
 			continue;
 		}
 	}
+	fclose(code);
 }
 void  Lexer::lexicalAnalyser(string file_name)
 {
@@ -308,18 +310,18 @@ void  Lexer::lexicalAnalyser(string file_name)
 	buildNFA("./LexicalGrammer.txt");
 	convertToDFA();
 	inputFile(file_name);
-	fclose(code);
 }
-void Lexer::outputToFile(string file_src)
+bool Lexer::outputToFile(string file_src)
 {
 	ofstream out;
 	out.open(file_src);
 	if (!out.is_open())
 	{
 		cout << "打开" << file_src << "文件失败" << endl;
-		return;
+		return 0;
 	}
 	for (auto& e : res)
 		out << e.first << " " << WordTypeName[e.second] << endl;
 	out.close();
+	return 1;
 }
