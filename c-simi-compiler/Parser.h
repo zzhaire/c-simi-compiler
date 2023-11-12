@@ -16,6 +16,13 @@ typedef struct ITEMS {
 }ITEMS;
 
 
+/* 项目集规范族，体现项目间的转移关系 */
+typedef struct TRANSFER_RELATION {
+	int src;	// 初始状态
+	int des;	// 转移状态
+	char ch;	// 读取到的字符
+}TRANSFER_RELATION;
+
 
 class Parser {
 private:
@@ -32,6 +39,7 @@ private:
 	vector<char> outlooks;	// 存放当前产生式的所有展望符
 	vector<ITEMS> items[N];	// 存储所有项目的所有产生式
 	int item_num;			// 项目的数量
+	vector<TRANSFER_RELATION> trans;	//表示一个项目集规范族内的转移
 
 	/* 文件读写相关 */
 	ifstream grammar_file;		// 文法文件
@@ -50,8 +58,11 @@ public:
 	void writeFirst();	// 将所有非终结符的FIRST集写入文本中
 	void getItemOutLook(ITEMS production);	// 获取给定产生式的展望符
 	void getClosure(int i);	// 获得项目集i的闭包
-	bool inItem(ITEMS production, int i);	// 判断产生式是否在当前项目集中
-	void 
+	bool inItem(ITEMS production, int i);	// 判断产生式是否在当前项目中
+	int getNextItem(int item_num);	// 找到items[item_num]项目第一次出现的位置
+	void goToActions(set<char>symbol_set, int id);	// GOTO求解当前项目在读取symbol_set中字符后，产生的后继项目
 	void getItemSet();	// 构造项目集
+	void writeItems();	// 将生成好的项目集写入文件中
+	void getActionTable();	// 构造ACTION表
 	void parseAnalyser(string grammar_file, string lexical_file, string items_file, string action_file, string first_set_file, string procedure_file);	// 核心函数，用于语法分析
 };

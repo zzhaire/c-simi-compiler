@@ -91,12 +91,9 @@ void Parser::getFirst()
 				// 如果右边当前字符为非终结符，根据FIRST集的求解方法将FIRST(right)放到当前非终结符的FIRST中
 				if (ifTerminal(right) == false) {
 					for(auto item : first[right])
-						if (item != EPSILON) {
+						if (item != EPSILON) 
 							if (first[left].insert(item).second) // 判断元素是否成功加入到left的FIRST集，只有当新元素被加入时才需要继续遍历
-							{
 								continue_flag = true;
-							}
-						}
 					// 如果当前FIRST(right)中包含epsilon，则需要将right下一个字符的FIRST也放到当前非终结符的FIRST中
 					if (first[right].count(EPSILON)) {
 						is_empty = true;
@@ -105,12 +102,9 @@ void Parser::getFirst()
 					}
 				}
 				// 走到这里表明是A->a类型的产生式(a可能是epsilon)，因此可以直接将a加入FIRST(left)
-				else {
+				else
 					if (first[left].insert(right).second) //如果新元素被加入到FIRST集，则需要再次遍历
-					{
 						continue_flag = true; // 执行到这里FIRST(left)已经构建好，不会继续向下找right了
-					}
-				}
 			}
 			// 能一直走到产生式结尾，则应该在FIRST(left)中加入epsilon
 			if (index == g_production[i].second.size())
@@ -167,10 +161,10 @@ bool Parser::inItem(ITEMS production, int i)
 
 void Parser::getClosure(int i)
 {
-	for (int j = 0; j < items[i].size(); j++) {	// 遍历当前项目集的所有产生式
+	for (int j = 0; j < items[i].size(); j++) {	// 遍历当前项目的所有产生式
 		int no = items[i][j].no, now = items[i][j].now;
 		if (ifTerminal(g_production[no].second[now]) == false)
-			// 如果当前右部圆点的下一个位置是非终结符，将所有左部是该非终结符的产生式加入该项目集中
+			// 如果当前右部圆点的下一个位置是非终结符，将所有左部是该非终结符的产生式加入该项目中
 			getItemOutLook(items[i][j]);	// 构造当前产生式的展望符
 			for (int k = 0; k <= g_number; k++)
 				if (g_production[k].first == g_production[no].second[now]) {
@@ -178,12 +172,57 @@ void Parser::getClosure(int i)
 					production.no = k, production.now = 1;
 					for (int z = 0; z < outlooks.size(); z++) {
 						production.outlook = outlooks[z];
-						if (!inItem(production, i))	// 如果当前产生式不在项目集中，则将其加入当前项目集
+						if (!inItem(production, i))	// 如果当前产生式不在项目中，则将其加入当前项目
 							items[i].push_back(production);
 					}
 				}
 			// 开始求下一条产生式的闭包
 			outlooks.clear();
+	}
+}
+
+int Parser::getNextItem(int item_num)
+{
+	int i,j;
+	for (i = 0; i < item_num; i++) {
+		for (j = 0; j < items[i].size(); j++) {
+			if (!(items[i][j] == items[item_num][j]))
+				break;
+		}
+		if (j == items[i].size())
+			return i;
+	}
+	return item_num;
+}
+
+void Parser::goToActions(set<char>symbol_set, int id)
+{
+	// 对于文法中的每个符号，计算它到来后该项目产生出的后继项目
+	bool has_trans = false;
+	for (auto now_ch : symbol_set) {
+		has_trans = false;
+		ITEMS production;
+		for (int j = 0; j < items[id].size(); j++) {	// 遍历项目中的每一条产生式，遇到当前字符后是否会转移
+			int no = items[id][j].no, now = items[id][j].now;
+			if (now_ch == g_production[no].second[now]) {	// 如果匹配，该产生式的圆点后移一位，展望符不变
+				production = { no,now, items[id][j].outlook };
+				if (!inItem(production, item_num)) {	// 这里是item_num，其实就是新创建了一个项目
+					has_trans = true;
+					items[item_num].push_back(production);	// 把当前产生式放到新的项目中
+				}
+			}
+		}
+		if (!has_trans)	// 没有产生新的产生式
+			continue;
+		getClosure(item_num);	// 求解新得到的项目的闭包
+		int next_item = getNextItem(item_num);
+		TRANSFER_RELATION transfer_relation;
+		transfer_relation = { id, next_item, now_ch };
+		trans.push_back(transfer_relation);
+		if (next_item < item_num) // 如果next_item不是最后一个，说明该项目已经在项目集中，不需要增加新的项目，把items最后一个清空
+			items[item_num].clear();
+		else
+			item_num++;
 	}
 }
 
@@ -194,6 +233,25 @@ void Parser::getItemSet()
 	item_num++;
 	getClosure(0);
 
+	// 之后不断处理后续的项目，直到不再有新项目产生
+	for (int i = 0; i < item_num; i++) {
+		goToActions(n_terminal, i);
+		goToActions(terminal, i);
+	}
+}
+
+void Parser::writeItems()
+{
+	for (int i = 0; i < item_num; i++) {
+		items_file << "-------------------------I" << i + 1 << "-------------------------" << endl;
+		for (int j = 0; j < items[i].size(); j++) {
+			int no = items[i][j].no, now = items[i][j].now;
+			char symbol = g_production[no].first;
+			string production = g_production[no].second;
+			production.insert(now, "·");
+			production.insert(0, "->");
+		}
+	}
 }
 
 void Parser::parseAnalyser(string grammar_file, string lexical_file, string items_file, string action_file, string first_set_file, string procedure_file)
@@ -202,8 +260,8 @@ void Parser::parseAnalyser(string grammar_file, string lexical_file, string item
 	getGrammer();
 	getFirst();
 	writeFirst();
-	
-	
+	getItemSet();
+	writeItems();
 
 	closeFile();
 }
