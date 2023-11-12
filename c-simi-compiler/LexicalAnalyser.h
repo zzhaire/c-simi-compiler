@@ -49,8 +49,9 @@ private:
 	int DFA_states_n = 0;
 	int DFA_transfer_states[NN][NN];
 
-	void Init();
+	char info[2048];// »º³åÇø
 
+	void Init();
 	bool isKeyWord(string s);
 	bool isBiOperator(string s);
 	bool isMoOperator(char c);

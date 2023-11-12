@@ -1,4 +1,6 @@
 #include "Parser.h"
+#include "common.h"
+using namespace std;
 
 int Parser::ifTerminal(char ch)
 {
@@ -90,8 +92,10 @@ void Parser::getFirst()
 				if (ifTerminal(right) == false) {
 					for(auto item : first[right])
 						if (item != EPSILON) {
-							first[left].insert(item);
-							continue_flag = true;
+							if (first[left].insert(item).second) // 判断元素是否成功加入到left的FIRST集，只有当新元素被加入时才需要继续遍历
+							{
+								continue_flag = true;
+							}
 						}
 					// 如果当前FIRST(right)中包含epsilon，则需要将right下一个字符的FIRST也放到当前非终结符的FIRST中
 					if (first[right].count(EPSILON)) {
@@ -102,8 +106,10 @@ void Parser::getFirst()
 				}
 				// 走到这里表明是A->a类型的产生式(a可能是epsilon)，因此可以直接将a加入FIRST(left)
 				else {
-					first[left].insert(right);
-					continue_flag = true;	// 执行到这里FIRST(left)已经构建好，不会继续向下找right了
+					if (first[left].insert(right).second) //如果新元素被加入到FIRST集，则需要再次遍历
+					{
+						continue_flag = true; // 执行到这里FIRST(left)已经构建好，不会继续向下找right了
+					}
 				}
 			}
 			// 能一直走到产生式结尾，则应该在FIRST(left)中加入epsilon

@@ -1,14 +1,6 @@
 #pragma once
-#include <iostream>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <algorithm>
-#include<stack>
-#include <windows.h>
-#include <queue>
-#include <set>
-#include "common.h"
+#include"common.h"
+
 using namespace std;
 
 const int N = 200;			// 产生式的数量
@@ -22,10 +14,6 @@ typedef struct ITEMS {
 		return (item1.no == item2.no) && (item1.now == item2.now) && (item1.outlook == item2.outlook);
 	}
 }ITEMS;
-
-
-
-
 
 
 
