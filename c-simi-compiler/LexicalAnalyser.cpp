@@ -12,33 +12,33 @@ void Lexer::Init()
 	lexer_map[";"] = SEMICO;
 	lexer_map[","] = COMMA;
 	lexer_map["$"] = ENDFILE;
-	// ÔËËã·û
+	// è¿ç®—ç¬¦
 	lexer_map["+"] = ADD;
 	lexer_map["-"] = MINUS;
 	lexer_map["*"] = MULT;
 	lexer_map["/"] = DIV;
 	lexer_map["="] = ASSIGN;
-	// ±È½Ï·û
+	// æ¯”è¾ƒç¬¦
 	lexer_map[">"] = GT;
 	lexer_map["<"] = LT;
 	lexer_map[">="] = GTE;
 	lexer_map["<="] = LTE;
 	lexer_map["=="] = EQ;
-	// À¨ºÅ
+	// æ‹¬å·
 	lexer_map["{"] = LBRACE;
 	lexer_map["}"] = RBRACE;
 	lexer_map["("] = LPAREN;
 	lexer_map[")"] = RPAREN;
-	// ¼¯ºÏ
+	// é›†åˆ
 	for (int i = 0; i < KN; i++)
 		key_words.insert(KEY_WORDS[i]);
-	// ³õÊ¼»¯µ¥Ä¿ÔËËã·û¼¯ºÏ
+	// åˆå§‹åŒ–å•ç›®è¿ç®—ç¬¦é›†åˆ
 	for (int i = 0; i < MON; i++)
 		mo_operators.insert(MO_OPT[i]);
-	// ³õÊ¼»¯Ë«Ä¿ÔËËã·û¼¯ºÏ
+	// åˆå§‹åŒ–åŒç›®è¿ç®—ç¬¦é›†åˆ
 	for (int i = 0; i < BIN; i++)
 		bi_operators.insert(BI_OPT[i]);
-	// ³õÊ¼»¯½ç·û¼¯ºÏ
+	// åˆå§‹åŒ–ç•Œç¬¦é›†åˆ
 	for (int i = 0; i < SEPN; i++)
 		seperators.insert(SEP_OPT[i]);
 	memset(DFA_transfer_states, -1, sizeof DFA_transfer_states);
@@ -87,23 +87,23 @@ int Lexer::getDFAStateIdx(State now)
 	}
 	return -1;
 }
-State Lexer::getEpsilonClosure(const State st) // Çó¸ø¶¨×Ó¼¯µÄepsilon±Õ°ü
+State Lexer::getEpsilonClosure(const State st) // æ±‚ç»™å®šå­é›†çš„epsiloné—­åŒ…
 {
-	State ans = st;		// ¸³Öµµ±Ç°×´Ì¬¼¯ºÏ
-	char tmp_state[NN];	// ÁÙÊ±×´Ì¬¼ÇÂ¼µ±Ç°¼¯ºÏÖĞÔªËØ(·½±ã±éÀú)
+	State ans = st;		// èµ‹å€¼å½“å‰çŠ¶æ€é›†åˆ
+	char tmp_state[NN];	// ä¸´æ—¶çŠ¶æ€è®°å½•å½“å‰é›†åˆä¸­å…ƒç´ (æ–¹ä¾¿éå†)
 	int idx = 0;
 
 	for (auto ch : st)
 		tmp_state[idx++] = ch;
 
-	for (int i = 0; i < idx; i++)	// ±éÀú¼¯ºÏÖĞËùÓĞ×Ö·û
-		for (auto ch : transfer_states[tmp_state[i]][EPSILON])	// ÕÒµ½Ã¿Ò»¸ö×Ö·û¾­¹ıepsilonºó¿ÉÒÔµ½´ïµÄ×´Ì¬
-			if (!inState(ch, st))	// µ±Ç°×Ö·ûÊÇ·ñÒÑ¾­ÔÚ¼¯ºÏÖĞ
+	for (int i = 0; i < idx; i++)	// éå†é›†åˆä¸­æ‰€æœ‰å­—ç¬¦
+		for (auto ch : transfer_states[tmp_state[i]][EPSILON])	// æ‰¾åˆ°æ¯ä¸€ä¸ªå­—ç¬¦ç»è¿‡epsilonåå¯ä»¥åˆ°è¾¾çš„çŠ¶æ€
+			if (!inState(ch, st))	// å½“å‰å­—ç¬¦æ˜¯å¦å·²ç»åœ¨é›†åˆä¸­
 			{
-				tmp_state[idx++] = ch;	// !Õâ¾ä»°ÖØÒª,ÊÇÒ»¸ö²»¶ÏÇó±Õ°üµÄ¹ı³Ì
+				tmp_state[idx++] = ch;	// !è¿™å¥è¯é‡è¦,æ˜¯ä¸€ä¸ªä¸æ–­æ±‚é—­åŒ…çš„è¿‡ç¨‹
 				ans.insert(ch);
 			}
-	return ans;	// ·µ»ØÇó³öepsilon±Õ°üºóµÄ¼¯ºÏ
+	return ans;	// è¿”å›æ±‚å‡ºepsiloné—­åŒ…åçš„é›†åˆ
 }
 vector<Word>& Lexer::getRes()
 {
@@ -111,23 +111,23 @@ vector<Word>& Lexer::getRes()
 }
 void Lexer::buildNFA(string grammer_file)
 {
-	int grammer_n;	// ²úÉúÊ½ÊıÁ¿
-	char left;		// ²úÉúÊ½×ó²¿
-	string  right;	// ²úÉúÊ½ÓÒ²¿
-	char _;			// ·Ö¸ô·ûÕ¼Î»·û
-	ifstream in;	// ¶ÁÈëÎÄ¼ş,Ê¹ÓÃÁ÷¶ÔÏó
+	int grammer_n;	// äº§ç”Ÿå¼æ•°é‡
+	char left;		// äº§ç”Ÿå¼å·¦éƒ¨
+	string  right;	// äº§ç”Ÿå¼å³éƒ¨
+	char _;			// åˆ†éš”ç¬¦å ä½ç¬¦
+	ifstream in;	// è¯»å…¥æ–‡ä»¶,ä½¿ç”¨æµå¯¹è±¡
 	in.open(grammer_file);
-	/* ´¦ÀíÎÄ¼ş */
-	in >> grammer_n;	// ¶ÁÈëÎÄ·¨²úÉúÊ½¸öÊı
+	/* å¤„ç†æ–‡ä»¶ */
+	in >> grammer_n;	// è¯»å…¥æ–‡æ³•äº§ç”Ÿå¼ä¸ªæ•°
 	for (int i = 0; i < grammer_n; i++)
 	{
-		in >> left >> _ >> _ >> right;	// ¶ÁÈ¡Ò»¸ö²úÉúÊ½
+		in >> left >> _ >> _ >> right;	// è¯»å–ä¸€ä¸ªäº§ç”Ÿå¼
 		if (!i)
-			DFA_start_state = left;		// µÚÒ»¸ö²úÉúÊ½µÄ×ó²¿ÊÇÆğÊ¼±äÔª
+			DFA_start_state = left;		// ç¬¬ä¸€ä¸ªäº§ç”Ÿå¼çš„å·¦éƒ¨æ˜¯èµ·å§‹å˜å…ƒ
 		if (!inState(left))
-			state.insert(left);		// Èç¹ûÃ»³öÏÖ¹ı,½«¸Ã±äÔª¼ÓÈëNFA¼¯ºÏÖĞ
+			state.insert(left);		// å¦‚æœæ²¡å‡ºç°è¿‡,å°†è¯¥å˜å…ƒåŠ å…¥NFAé›†åˆä¸­
 		if (!inFinalState(right[0]))
-			final_state.insert(right[0]);	// ÓÒ²¿Ö»ÓĞµÚÒ»¸ö×Ö·û¿ÉÄÜÊÇÖÕ½á·û,Èç¹ûÊÇÔò¼ÓÈëÖÕ½á·û¼¯ºÏ
+			final_state.insert(right[0]);	// å³éƒ¨åªæœ‰ç¬¬ä¸€ä¸ªå­—ç¬¦å¯èƒ½æ˜¯ç»ˆç»“ç¬¦,å¦‚æœæ˜¯åˆ™åŠ å…¥ç»ˆç»“ç¬¦é›†åˆ
 		if (right.length() > 1)
 			transfer_states[left][right[0]].insert(right[1]);
 		else
@@ -135,14 +135,14 @@ void Lexer::buildNFA(string grammer_file)
 	}
 	in.close();
 }
-void Lexer::convertToDFA()	// Ê¹ÓÃ×Ó¼¯¹¹Ôì·¨×ªÎªDFA
+void Lexer::convertToDFA()	// ä½¿ç”¨å­é›†æ„é€ æ³•è½¬ä¸ºDFA
 {
 	DFA_states_n = 0;
-	State now_state, next_state;    // ¼ÇÂ¼Á½¸ö×´Ì¬
-	queue<State> state_queue;	// ĞèÒª´¦ÀíµÄ×Ó¼¯¶ÓÁĞ
+	State now_state, next_state;    // è®°å½•ä¸¤ä¸ªçŠ¶æ€
+	queue<State> state_queue;	// éœ€è¦å¤„ç†çš„å­é›†é˜Ÿåˆ—
 
-	/* ÏÖÔÚ¿ªÊ¼´¦Àí×Ó¼¯ */
-	now_state.insert(DFA_start_state);	// µÃµ½³õÊ¼×´Ì¬µÄ¿ËÁÖ±Õ°ü
+	/* ç°åœ¨å¼€å§‹å¤„ç†å­é›† */
+	now_state.insert(DFA_start_state);	// å¾—åˆ°åˆå§‹çŠ¶æ€çš„å…‹æ—é—­åŒ…
 	now_state = getEpsilonClosure(now_state);
 	state_queue.push(now_state);
 	DFA_states[DFA_states_n++] = now_state;
@@ -150,7 +150,7 @@ void Lexer::convertToDFA()	// Ê¹ÓÃ×Ó¼¯¹¹Ôì·¨×ªÎªDFA
 	if (isFinalState(now_state))
 		DFA_is_final[DFA_states_n - 1] = true;
 
-	/* ¿ªÊ¼À©³ä */
+	/* å¼€å§‹æ‰©å…… */
 	while (!state_queue.empty())
 	{
 		now_state = state_queue.front();
@@ -209,7 +209,28 @@ void Lexer::inputFile(string file_name)
 	{
 		keyFlag = -1;
 		ptr = 0;
-		if (isdigit(ch)) // ¶àÒ»¸öch
+		// æ£€æµ‹æ³¨é‡Š
+		if (ch == '/') {
+			char next_ch = fgetc(code); // è·å–ä¸‹ä¸€ä¸ªå­—ç¬¦ä»¥æ£€æµ‹æ³¨é‡Š
+			if (next_ch == '/') { // å¤„ç†å•è¡Œæ³¨é‡Š
+				while (ch != '\n' && ch != EOF) { // è·³è¿‡ç›´åˆ°è¡Œå°¾æˆ–æ–‡ä»¶ç»“æŸ
+					ch = fgetc(code);
+				}
+			}
+			else if (next_ch == '*') { // å¤„ç†å¤šè¡Œæ³¨é‡Š
+				while (true) { // å¾ªç¯ç›´åˆ°æ‰¾åˆ°æ³¨é‡Šç»“æŸ
+					ch = fgetc(code);
+					if (ch == '*' && (next_ch = fgetc(code)) == '/') {
+						ch = fgetc(code); // è·³è¿‡æ³¨é‡Šç»“æŸåçš„ä¸‹ä¸€ä¸ªå­—ç¬¦
+						break;
+					}
+				}
+			}
+			else { // å¦‚æœä¸æ˜¯æ³¨é‡Šï¼Œåˆ™éœ€è¦å¤„ç†'/'
+				ungetc(next_ch, code); // æŠŠéæ³¨é‡Šçš„å­—ç¬¦æ”¾å›å»
+			}
+		}
+		if (isdigit(ch)) // å¤šä¸€ä¸ªch
 		{
 			keyFlag = 1;
 			info[ptr++] = ch;
@@ -320,7 +341,7 @@ bool Lexer::outputToFile(string file_src)
 	out.open(file_src);
 	if (!out.is_open())
 	{
-		cout << "´ò¿ª" << file_src << "ÎÄ¼şÊ§°Ü" << endl;
+		cout << "æ‰“å¼€" << file_src << "æ–‡ä»¶å¤±è´¥" << endl;
 		return 0;
 	}
 	for (auto& e : res)
