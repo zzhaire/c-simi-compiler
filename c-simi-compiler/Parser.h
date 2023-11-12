@@ -5,6 +5,18 @@ using namespace std;
 
 const int N = 200;			// 产生式的数量
 
+/* LR(1)项目集结构体 */
+typedef struct ITEMS {
+	int no;	// 表示该产生式在文法中的编号
+	int now;	// 表示圆点·所在的位置，产生式右部第一个位置为0
+	char outlook;	// 表示展望符
+	friend bool operator == (ITEMS item1, ITEMS item2) {	// 重载==运算符
+		return (item1.no == item2.no) && (item1.now == item2.now) && (item1.outlook == item2.outlook);
+	}
+}ITEMS;
+
+
+
 class Parser {
 private:
 	/* 产生式相关变量 */
@@ -15,7 +27,11 @@ private:
 	
 	/* FIRST集相关变量 */
 	set<char> first[N];		// 存放每个字符的FIRST集
+
+	/* 项目集相关变量 */
 	vector<char> outlooks;	// 存放当前产生式的所有展望符
+	vector<ITEMS> items[N];	// 存储所有项目的所有产生式
+	int item_num;			// 项目的数量
 
 	/* 文件读写相关 */
 	ifstream grammar_file;		// 文法文件
@@ -32,5 +48,10 @@ public:
 	void getGrammer();	// 获取语法分析的格式文件
 	void getFirst();	// 获取文法中所有非终结符的FIRST集
 	void writeFirst();	// 将所有非终结符的FIRST集写入文本中
+	void getItemOutLook(ITEMS production);	// 获取给定产生式的展望符
+	void getClosure(int i);	// 获得项目集i的闭包
+	bool inItem(ITEMS production, int i);	// 判断产生式是否在当前项目集中
+	void 
+	void getItemSet();	// 构造项目集
 	void parseAnalyser(string grammar_file, string lexical_file, string items_file, string action_file, string first_set_file, string procedure_file);	// 核心函数，用于语法分析
 };
