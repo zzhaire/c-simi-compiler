@@ -1,13 +1,16 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
 #include <vector>
-#include<iostream>
 #include<map>
 #include<string>
 #include<fstream>
 #include<list>
 #include<set>
 #include<queue>
+#include <algorithm>
+#include<stack>
+//#include <windows.h>
 using namespace std;
 
 const char FINAL_STATE = '#';
@@ -17,35 +20,35 @@ const char END_SIGN = '$';
 
 const string WordTypeName[] = {
 		"ENDFILE", "ERROR",
-		/* ±£¡Ù◊÷ */
+		/* ‰øùÁïôÂ≠ó */
 		"IF", "ELSE", "INT", "RETURN", "VOID", "WHILE",
-		/* ±‰¡ø√˚∫Õ ˝◊÷ */
+		/* ÂèòÈáèÂêçÂíåÊï∞Â≠ó */
 		"ID", "NUM",
-		/* Ãÿ ‚◊÷∑˚ */
+		/* ÁâπÊÆäÂ≠óÁ¨¶ */
 		/*  {       }         >=     <=    !=     ==      =         */
 		"LBRACE", "RBRACE", "GTE", "LTE", "NEQ", "EQ", "ASSIGN",
 		// <    >     +        -        *        /      (          )      ;        ,  
 		"LT", "GT", "ADD", "MINUS", "MULT", "DIV", "LPAREN", "RPAREN", "SEMI", "COMMA",
-		/* ––◊¢ Õ  ∂Œ◊¢ Õ */
+		/* Ë°åÊ≥®Èáä  ÊÆµÊ≥®Èáä */
 		"LCOMMENT", "PCOMMENT",
-		/*ªª––∑˚*/
+		/*Êç¢Ë°åÁ¨¶*/
 		"NEXTLINE",
 		"SEMICO"
 };
 typedef enum WordType
 {
-	/* Ω· ¯±Í÷æ∫Õ¥ÌŒÛ±Í÷æ */
+	/* ÁªìÊùüÊ†áÂøóÂíåÈîôËØØÊ†áÂøó */
 	ENDFILE, ERROR,
-	/* ±£¡Ù◊÷ */
+	/* ‰øùÁïôÂ≠ó */
 	IF, ELSE, INT, RETURN, VOID, WHILE,
-	/* ±‰¡ø√˚∫Õ ˝◊÷ */
+	/* ÂèòÈáèÂêçÂíåÊï∞Â≠ó */
 	ID, NUM,
-	/* Ãÿ ‚◊÷∑˚ */
+	/* ÁâπÊÆäÂ≠óÁ¨¶ */
 	/*  {       }    >=   <=   !=   ==    =    <   >    +      -     *     /     (        )     ;     ,   */
 	LBRACE, RBRACE, GTE, LTE, NEQ, EQ, ASSIGN, LT, GT, ADD, MINUS, MULT, DIV, LPAREN, RPAREN, SEMI, COMMA,
-	/* ––◊¢ Õ  ∂Œ◊¢ Õ */
+	/* Ë°åÊ≥®Èáä  ÊÆµÊ≥®Èáä */
 	LCOMMENT, PCOMMENT,
-	/*ªª––∑˚*/
+	/*Êç¢Ë°åÁ¨¶*/
 	NEXTLINE,
 	SEMICO
 } Token;
