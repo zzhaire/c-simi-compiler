@@ -249,9 +249,40 @@ void Parser::writeItems()
 			char symbol = g_production[no].first;
 			string production = g_production[no].second;
 			production.insert(now, "·");
-			production.insert(0, "->");
+			items_file << symbol << "->" << production << ",    outlook: " << items[i][j].outlook << endl;
 		}
 	}
+}
+
+void Parser::getActionTable()
+{
+	// 构造ACTION表
+	action_table = vector<vector<ACTION>>(N);
+	state_num = item_num;
+
+	// 获取归约项目
+	for (int i = 0; i < state_num; i++) {
+		for (int j = 0; j < items[i].size(); j++) {
+			int no = items[i][j].no, now = items[i][j].now;
+			if (now == g_production[no].second.size() || g_production[no].second[now] == EPSILON)
+				// 说明是形似 A->a·的归约项目，或者是 A->·@的项目，这两种可以直接归约
+				action_table[i].push_back({items[i][j].outlook, -no});	// 注意这里负号表示归约，使用文法中编号为no的产生式进行归约
+		}
+	}
+
+	// 获取移进项目
+	for (int i = 0; i < trans.size(); i++)
+		action_table[trans[i].src].push_back({ trans[i].ch, trans[i].des });
+}
+
+void Parser::writeActionTable()
+{
+	for (int i = 0; i < state_num; i++)
+		for (int j = 0; j < action_table[i].size(); j++)
+			if(action_table[i][j].next_state > 0)
+				action_file << "(" << i << "," << action_table[i][j].ch << "," << action_table[i][j].next_state << ", 移进 )" << endl;
+			else
+				action_file << "(" << i << "," << action_table[i][j].ch << "," << -action_table[i][j].next_state << ", 归约 )" << endl;
 }
 
 void Parser::parseAnalyser(string grammar_file, string lexical_file, string items_file, string action_file, string first_set_file, string procedure_file)
@@ -262,6 +293,10 @@ void Parser::parseAnalyser(string grammar_file, string lexical_file, string item
 	writeFirst();
 	getItemSet();
 	writeItems();
+	getActionTable();
+	writeActionTable();
+
+	/* 待完善 */
 
 	closeFile();
 }

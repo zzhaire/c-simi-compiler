@@ -2,15 +2,16 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <vector>
-#include<map>
-#include<string>
-#include<fstream>
-#include<list>
-#include<set>
-#include<queue>
+#include <map>
+#include <string>
+#include <fstream>
+#include <list>
+#include <set>
+#include <queue>
 #include <algorithm>
-#include<stack>
-#include<cstring>
+#include <stack>
+#include <cstring>
+#include <cmath>
 //#include <windows.h>
 using namespace std;
 

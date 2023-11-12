@@ -24,6 +24,13 @@ typedef struct TRANSFER_RELATION {
 }TRANSFER_RELATION;
 
 
+/* ACNTION表结构体 */
+typedef struct ACTION {
+	char ch;	// 读取到的字符
+	int next_state;	// 正数表示移进并转移到第next_state个项目，负数表示用第|next_state|条产生式归约
+}ACTION;
+
+
 class Parser {
 private:
 	/* 产生式相关变量 */
@@ -40,6 +47,10 @@ private:
 	vector<ITEMS> items[N];	// 存储所有项目的所有产生式
 	int item_num;			// 项目的数量
 	vector<TRANSFER_RELATION> trans;	//表示一个项目集规范族内的转移
+
+	/* ACTION表相关 */
+	vector<vector<ACTION>> action_table;	// action_table[i][j]表示状态i的第j个动作
+	int state_num;			// 表示一共有多少个状态，它的值应该等于items_num
 
 	/* 文件读写相关 */
 	ifstream grammar_file;		// 文法文件
@@ -64,5 +75,6 @@ public:
 	void getItemSet();	// 构造项目集
 	void writeItems();	// 将生成好的项目集写入文件中
 	void getActionTable();	// 构造ACTION表
+	void writeActionTable();	// 将生成好的ACTION表写入文件中
 	void parseAnalyser(string grammar_file, string lexical_file, string items_file, string action_file, string first_set_file, string procedure_file);	// 核心函数，用于语法分析
 };
