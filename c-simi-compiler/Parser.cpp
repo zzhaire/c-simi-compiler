@@ -1,4 +1,6 @@
 #include "Parser.h"
+#include "common.h"
+using namespace std;
 
 int Parser::ifTerminal(char ch)
 {
@@ -12,11 +14,11 @@ int Parser::ifTerminal(char ch)
 void Parser::terminalInsert(char ch)
 {
 	int if_terminal = ifTerminal(ch);
-	if (if_terminal == false) {	// éç»ˆç»“ç¬¦
+	if (if_terminal == false) {	// ·ÇÖÕ½á·û
 		if (!n_terminal.count(ch))
 			n_terminal.insert(ch);
 	}
-	else if (if_terminal == true) {	// ç»ˆç»“ç¬¦
+	else if (if_terminal == true) {	// ÖÕ½á·û
 		if (!terminal.count(ch))
 			terminal.insert(ch);
 	}
@@ -44,22 +46,22 @@ void Parser::closeFile()
 
 void Parser::getGrammer()
 {
-	// è·å–è¯­æ³•åˆ†æçš„æ ¼å¼æ–‡ä»¶ï¼Œä¿å­˜æ ¼å¼ä¸ºpair<éç»ˆç»“ç¬¦ï¼Œäº§ç”Ÿå¼å³éƒ¨>
+	// »ñÈ¡Óï·¨·ÖÎöµÄ¸ñÊ½ÎÄ¼ş£¬±£´æ¸ñÊ½Îªpair<·ÇÖÕ½á·û£¬²úÉúÊ½ÓÒ²¿>
 	char symbol, _;
-	grammar_file >> g_number;	// è·å–äº§ç”Ÿå¼æ•°é‡
+	grammar_file >> g_number;	// »ñÈ¡²úÉúÊ½ÊıÁ¿
 
-	// æŠŠæ–‡æ³•Gå˜ä¸ºæ‹“å¹¿æ–‡æ³•
+	// °ÑÎÄ·¨G±äÎªÍØ¹ãÎÄ·¨
 	g_production[0].first = 'S';
 
-	// ä¹‹åå¼€å§‹è¯»å–è¯­æ³•äº§ç”Ÿå¼
+	// Ö®ºó¿ªÊ¼¶ÁÈ¡Óï·¨²úÉúÊ½
 	for (int i = 1; i <= g_number; i++)
 	{
-		// è¯»å–æ ¼å¼ä¸ºå˜å…ƒ->äº§ç”Ÿå¼å³éƒ¨ï¼Œå…ˆä¸è¯»å³éƒ¨
+		// ¶ÁÈ¡¸ñÊ½Îª±äÔª->²úÉúÊ½ÓÒ²¿£¬ÏÈ²»¶ÁÓÒ²¿
 		grammar_file >> symbol >> _ >> _ ;	
 		g_production[i].first = symbol;
 		terminalInsert(symbol);
 
-		// å•ç‹¬å¤„ç†å³éƒ¨
+		// µ¥¶À´¦ÀíÓÒ²¿
 		grammar_file >> symbol;
 		while (symbol != END_SIGN) 
 		{
@@ -68,7 +70,7 @@ void Parser::getGrammer()
 			grammar_file >> symbol;
 		}
 	}
-	g_production[0].second = g_production[1].first;	// è¡¥ä¸Šç¬¬ä¸€é¡¹ï¼ˆæ‹“å¹¿æ–‡æ³•ï¼‰
+	g_production[0].second = g_production[1].first;	// ²¹ÉÏµÚÒ»Ïî£¨ÍØ¹ãÎÄ·¨£©
 }
 
 void Parser::getFirst()
@@ -79,34 +81,34 @@ void Parser::getFirst()
 		continue_flag = false;
 		for (int i = 1; i <= g_number; i++){
 
-			// æ¯ä¸€æ¬¡éƒ½éå†æ¯ä¸€æ¡æ–‡æ³•ï¼Œä»å³è¾¹ç¬¬ä¸€ä¸ªå­—ç¬¦å¼€å§‹æ£€æŸ¥ï¼Œæ¯æ¬¡åªæ±‚è§£å‡ºä¸€ä¸ªéç»ˆç»“ç¬¦çš„FIRSTé›†
+			// Ã¿Ò»´Î¶¼±éÀúÃ¿Ò»ÌõÎÄ·¨£¬´ÓÓÒ±ßµÚÒ»¸ö×Ö·û¿ªÊ¼¼ì²é£¬Ã¿´ÎÖ»Çó½â³öÒ»¸ö·ÇÖÕ½á·ûµÄFIRST¼¯
 			int index = 0;
 			is_empty = true;
 			char left = g_production[i].first, right = g_production[i].second[index];
-			while (is_empty && index < g_production[i].second.size()) {	// è¿™å±‚å¾ªç¯æ˜¯å› ä¸ºFIRST(right)ä¸­å¯èƒ½åŒ…å«epsilon
+			while (is_empty && index < g_production[i].second.size()) {	// Õâ²ãÑ­»·ÊÇÒòÎªFIRST(right)ÖĞ¿ÉÄÜ°üº¬epsilon
 				is_empty = false;
 
-				// å¦‚æœå³è¾¹å½“å‰å­—ç¬¦ä¸ºéç»ˆç»“ç¬¦ï¼Œæ ¹æ®FIRSTé›†çš„æ±‚è§£æ–¹æ³•å°†FIRST(right)æ”¾åˆ°å½“å‰éç»ˆç»“ç¬¦çš„FIRSTä¸­
+				// Èç¹ûÓÒ±ßµ±Ç°×Ö·ûÎª·ÇÖÕ½á·û£¬¸ù¾İFIRST¼¯µÄÇó½â·½·¨½«FIRST(right)·Åµ½µ±Ç°·ÇÖÕ½á·ûµÄFIRSTÖĞ
 				if (ifTerminal(right) == false) {
 					for(auto item : first[right])
 						if (item != EPSILON) {
 							first[left].insert(item);
 							continue_flag = true;
 						}
-					// å¦‚æœå½“å‰FIRST(right)ä¸­åŒ…å«epsilonï¼Œåˆ™éœ€è¦å°†rightä¸‹ä¸€ä¸ªå­—ç¬¦çš„FIRSTä¹Ÿæ”¾åˆ°å½“å‰éç»ˆç»“ç¬¦çš„FIRSTä¸­
+					// Èç¹ûµ±Ç°FIRST(right)ÖĞ°üº¬epsilon£¬ÔòĞèÒª½«rightÏÂÒ»¸ö×Ö·ûµÄFIRSTÒ²·Åµ½µ±Ç°·ÇÖÕ½á·ûµÄFIRSTÖĞ
 					if (first[right].count(EPSILON)) {
 						is_empty = true;
 						right = g_production[i].second[++index];
 						continue;
 					}
 				}
-				// èµ°åˆ°è¿™é‡Œè¡¨æ˜æ˜¯A->aç±»å‹çš„äº§ç”Ÿå¼(aå¯èƒ½æ˜¯epsilon)ï¼Œå› æ­¤å¯ä»¥ç›´æ¥å°†aåŠ å…¥FIRST(left)
+				// ×ßµ½ÕâÀï±íÃ÷ÊÇA->aÀàĞÍµÄ²úÉúÊ½(a¿ÉÄÜÊÇepsilon)£¬Òò´Ë¿ÉÒÔÖ±½Ó½«a¼ÓÈëFIRST(left)
 				else {
 					first[left].insert(right);
-					continue_flag = true;	// æ‰§è¡Œåˆ°è¿™é‡ŒFIRST(left)å·²ç»æ„å»ºå¥½ï¼Œä¸ä¼šç»§ç»­å‘ä¸‹æ‰¾rightäº†
+					continue_flag = true;	// Ö´ĞĞµ½ÕâÀïFIRST(left)ÒÑ¾­¹¹½¨ºÃ£¬²»»á¼ÌĞøÏòÏÂÕÒrightÁË
 				}
 			}
-			// èƒ½ä¸€ç›´èµ°åˆ°äº§ç”Ÿå¼ç»“å°¾ï¼Œåˆ™åº”è¯¥åœ¨FIRST(left)ä¸­åŠ å…¥epsilon
+			// ÄÜÒ»Ö±×ßµ½²úÉúÊ½½áÎ²£¬ÔòÓ¦¸ÃÔÚFIRST(left)ÖĞ¼ÓÈëepsilon
 			if (index == g_production[i].second.size())
 				first[left].insert(EPSILON);
 		}
@@ -132,7 +134,7 @@ void Parser::parseAnalyser(string grammar_file, string lexical_file, string item
 	getFirst();
 	writeFirst();
 	
-	/* å¾…å®ç° */
+	/* ´ıÊµÏÖ */
 
 	closeFile();
 }

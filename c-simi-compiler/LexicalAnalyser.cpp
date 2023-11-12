@@ -1,4 +1,3 @@
-
 #include"LexicalAnalyser.h"
 #include"common.h"
 void Lexer::Init()
@@ -164,7 +163,6 @@ void Lexer::convertToDFA()	// 使用子集构造法转为DFA
 					if (!inState(next_ch, next_state))
 						next_state.insert(next_ch);
 
-
 			next_state = getEpsilonClosure(next_state);
 			int next_id = getDFAStateIdx(next_state);
 			int now_id = getDFAStateIdx(now_state);
@@ -197,7 +195,11 @@ bool Lexer::canReachFinal(string str)
 void Lexer::inputFile(string file_name)
 {
 	code = fopen(file_name.c_str(), "r+");
-	char info[128];
+	if (code == nullptr)
+	{
+		cout << "文件" << file_name << "打开失败" << endl;
+		exit(0);
+	}
 	char ch;
 	int ptr;
 	int keyFlag;
@@ -301,6 +303,7 @@ void Lexer::inputFile(string file_name)
 			}
 			continue;
 		}
+		memset(info, -1, sizeof info);
 	}
 	fclose(code);
 }

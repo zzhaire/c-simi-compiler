@@ -3,9 +3,6 @@
 #include "common.h" 
 using namespace std;
 /***********const****************/
-const char FINAL_STATE = '#';
-const char STACK_SIG = '$';
-const char EPSILON = '@';
 const int KN = 22;
 const string KEY_WORDS[KN] = {
 	"break", "case", "char", "continue",
@@ -51,6 +48,8 @@ private:
 	State DFA_states[NN];	//所有的DFA状态
 	int DFA_states_n = 0;
 	int DFA_transfer_states[NN][NN];
+
+	char info[2048];// 缓冲区
 
 	void Init();
 	bool isKeyWord(string s);

@@ -1,41 +1,36 @@
 #pragma once
-#include "common.h"
+#include"common.h"
+
 using namespace std;
 
-const int N = 200;			// äº§ç”Ÿå¼çš„æ•°é‡
-
-
-
-
-
-
+const int N = 200;			// ²úÉúÊ½µÄÊıÁ¿
 
 class Parser {
 private:
-	/* äº§ç”Ÿå¼ç›¸å…³å˜é‡ */
-	int g_number;						// è®°å½•æ‹“å¹¿æ–‡æ³•G'çš„äº§ç”Ÿå¼æ•°é‡
-	pair<char, string>g_production[N];	// è®°å½•æ‰€æœ‰çš„äº§ç”Ÿå¼
-	set<char>n_terminal;				// éç»ˆç»“ç¬¦é›†
-	set<char>terminal;					// ç»ˆç»“ç¬¦é›†
+	/* ²úÉúÊ½Ïà¹Ø±äÁ¿ */
+	int g_number;						// ¼ÇÂ¼ÍØ¹ãÎÄ·¨G'µÄ²úÉúÊ½ÊıÁ¿
+	pair<char, string>g_production[N];	// ¼ÇÂ¼ËùÓĞµÄ²úÉúÊ½
+	set<char>n_terminal;				// ·ÇÖÕ½á·û¼¯
+	set<char>terminal;					// ÖÕ½á·û¼¯
 	
-	/* FIRSTé›†ç›¸å…³å˜é‡ */
-	set<char> first[N];		// å­˜æ”¾æ¯ä¸ªå­—ç¬¦çš„FIRSTé›†
-	vector<char> outlooks;	// å­˜æ”¾å½“å‰äº§ç”Ÿå¼çš„æ‰€æœ‰å±•æœ›ç¬¦
+	/* FIRST¼¯Ïà¹Ø±äÁ¿ */
+	set<char> first[N];		// ´æ·ÅÃ¿¸ö×Ö·ûµÄFIRST¼¯
+	vector<char> outlooks;	// ´æ·Åµ±Ç°²úÉúÊ½µÄËùÓĞÕ¹Íû·û
 
-	/* æ–‡ä»¶è¯»å†™ç›¸å…³ */
-	ifstream grammar_file;		// æ–‡æ³•æ–‡ä»¶
-	ifstream lexical_file;		// è¯æ³•åˆ†æå™¨ç»™å‡ºçš„åˆ†æç»“æœ
-	ofstream items_file;		// é¡¹ç›®é›†
-	ofstream action_file;		// ACTIONè¡¨
-	ofstream first_set_file;	// æ–‡æ³•ä¸­æ‰€æœ‰éç»ˆç»“ç¬¦çš„Firsté›†
-	ofstream procedure_file;	// åˆ†æè¿‡ç¨‹
+	/* ÎÄ¼ş¶ÁĞ´Ïà¹Ø */
+	ifstream grammar_file;		// ÎÄ·¨ÎÄ¼ş
+	ifstream lexical_file;		// ´Ê·¨·ÖÎöÆ÷¸ø³öµÄ·ÖÎö½á¹û
+	ofstream items_file;		// ÏîÄ¿¼¯
+	ofstream action_file;		// ACTION±í
+	ofstream first_set_file;	// ÎÄ·¨ÖĞËùÓĞ·ÇÖÕ½á·ûµÄFirst¼¯
+	ofstream procedure_file;	// ·ÖÎö¹ı³Ì
 public:
-	int ifTerminal(char ch);	// æ£€æŸ¥å½“å‰å­—ç¬¦æ˜¯å¦ä¸ºç»ˆç»“ç¬¦
-	void terminalInsert(char ch);	// æ£€æŸ¥å½“å‰å­—ç¬¦ï¼Œå¹¶æ ¹æ®éœ€è¦å’Œå­—ç¬¦å±æ€§æ”¾åˆ°éç»ˆç»“ç¬¦æˆ–ç»ˆç»“ç¬¦é›†ä¸­
-	void openFile(string grammar_file, string lexical_file, string items_file, string action_file, string first_set_file, string procedure_file);	// æ‰“å¼€éœ€è¦çš„æ–‡ä»¶
-	void closeFile();	// å…³é—­æ‰€æœ‰æ–‡ä»¶
-	void getGrammer();	// è·å–è¯­æ³•åˆ†æçš„æ ¼å¼æ–‡ä»¶
-	void getFirst();	// è·å–æ–‡æ³•ä¸­æ‰€æœ‰éç»ˆç»“ç¬¦çš„FIRSTé›†
-	void writeFirst();	// å°†æ‰€æœ‰éç»ˆç»“ç¬¦çš„FIRSTé›†å†™å…¥æ–‡æœ¬ä¸­
-	void parseAnalyser(string grammar_file, string lexical_file, string items_file, string action_file, string first_set_file, string procedure_file);	// æ ¸å¿ƒå‡½æ•°ï¼Œç”¨äºè¯­æ³•åˆ†æ
+	int ifTerminal(char ch);	// ¼ì²éµ±Ç°×Ö·ûÊÇ·ñÎªÖÕ½á·û
+	void terminalInsert(char ch);	// ¼ì²éµ±Ç°×Ö·û£¬²¢¸ù¾İĞèÒªºÍ×Ö·ûÊôĞÔ·Åµ½·ÇÖÕ½á·û»òÖÕ½á·û¼¯ÖĞ
+	void openFile(string grammar_file, string lexical_file, string items_file, string action_file, string first_set_file, string procedure_file);	// ´ò¿ªĞèÒªµÄÎÄ¼ş
+	void closeFile();	// ¹Ø±ÕËùÓĞÎÄ¼ş
+	void getGrammer();	// »ñÈ¡Óï·¨·ÖÎöµÄ¸ñÊ½ÎÄ¼ş
+	void getFirst();	// »ñÈ¡ÎÄ·¨ÖĞËùÓĞ·ÇÖÕ½á·ûµÄFIRST¼¯
+	void writeFirst();	// ½«ËùÓĞ·ÇÖÕ½á·ûµÄFIRST¼¯Ğ´ÈëÎÄ±¾ÖĞ
+	void parseAnalyser(string grammar_file, string lexical_file, string items_file, string action_file, string first_set_file, string procedure_file);	// ºËĞÄº¯Êı£¬ÓÃÓÚÓï·¨·ÖÎö
 };

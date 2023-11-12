@@ -10,6 +10,7 @@
 #include<queue>
 #include <algorithm>
 #include<stack>
+#include<cstring>
 //#include <windows.h>
 using namespace std;
 
@@ -20,35 +21,35 @@ const char END_SIGN = '$';
 
 const string WordTypeName[] = {
 		"ENDFILE", "ERROR",
-		/* ä¿ç•™å­— */
+		/* ±£Áô×Ö */
 		"IF", "ELSE", "INT", "RETURN", "VOID", "WHILE",
-		/* å˜é‡åå’Œæ•°å­— */
+		/* ±äÁ¿ÃûºÍÊý×Ö */
 		"ID", "NUM",
-		/* ç‰¹æ®Šå­—ç¬¦ */
+		/* ÌØÊâ×Ö·û */
 		/*  {       }         >=     <=    !=     ==      =         */
 		"LBRACE", "RBRACE", "GTE", "LTE", "NEQ", "EQ", "ASSIGN",
 		// <    >     +        -        *        /      (          )      ;        ,  
 		"LT", "GT", "ADD", "MINUS", "MULT", "DIV", "LPAREN", "RPAREN", "SEMI", "COMMA",
-		/* è¡Œæ³¨é‡Š  æ®µæ³¨é‡Š */
+		/* ÐÐ×¢ÊÍ  ¶Î×¢ÊÍ */
 		"LCOMMENT", "PCOMMENT",
-		/*æ¢è¡Œç¬¦*/
+		/*»»ÐÐ·û*/
 		"NEXTLINE",
 		"SEMICO"
 };
 typedef enum WordType
 {
-	/* ç»“æŸæ ‡å¿—å’Œé”™è¯¯æ ‡å¿— */
+	/* ½áÊø±êÖ¾ºÍ´íÎó±êÖ¾ */
 	ENDFILE, ERROR,
-	/* ä¿ç•™å­— */
+	/* ±£Áô×Ö */
 	IF, ELSE, INT, RETURN, VOID, WHILE,
-	/* å˜é‡åå’Œæ•°å­— */
+	/* ±äÁ¿ÃûºÍÊý×Ö */
 	ID, NUM,
-	/* ç‰¹æ®Šå­—ç¬¦ */
+	/* ÌØÊâ×Ö·û */
 	/*  {       }    >=   <=   !=   ==    =    <   >    +      -     *     /     (        )     ;     ,   */
 	LBRACE, RBRACE, GTE, LTE, NEQ, EQ, ASSIGN, LT, GT, ADD, MINUS, MULT, DIV, LPAREN, RPAREN, SEMI, COMMA,
-	/* è¡Œæ³¨é‡Š  æ®µæ³¨é‡Š */
+	/* ÐÐ×¢ÊÍ  ¶Î×¢ÊÍ */
 	LCOMMENT, PCOMMENT,
-	/*æ¢è¡Œç¬¦*/
+	/*»»ÐÐ·û*/
 	NEXTLINE,
 	SEMICO
 } Token;
