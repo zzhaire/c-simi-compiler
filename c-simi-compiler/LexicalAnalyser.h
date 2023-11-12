@@ -53,7 +53,6 @@ private:
 	int DFA_transfer_states[NN][NN];
 
 	void Init();
-
 	bool isKeyWord(string s);
 	bool isBiOperator(string s);
 	bool isMoOperator(char c);
