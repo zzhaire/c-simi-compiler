@@ -3,9 +3,6 @@
 #include "common.h" 
 using namespace std;
 /***********const****************/
-const char FINAL_STATE = '#';
-const char STACK_SIG = '$';
-const char EPSILON = '@';
 const int KN = 22;
 const string KEY_WORDS[KN] = {
 	"break", "case", "char", "continue",

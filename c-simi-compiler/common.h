@@ -10,6 +10,11 @@
 #include<queue>
 using namespace std;
 
+const char FINAL_STATE = '#';
+const char STACK_SIG = '$';
+const char EPSILON = '@';
+const char END_SIGN = '$';
+
 const string WordTypeName[] = {
 		"ENDFILE", "ERROR",
 		/* ±£Áô×Ö */
