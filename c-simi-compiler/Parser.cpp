@@ -285,6 +285,65 @@ void Parser::writeActionTable()
 				action_file << "(" << i << "," << action_table[i][j].ch << "," << -action_table[i][j].next_state << ", 归约 )" << endl;
 }
 
+void Parser::writeAnalyzeProcedure(int& step)
+{
+	procedure_file << step++ << "\t\t" << endl;
+	stack<int> tmp_state(state_stack);	// state_stack栈的临时拷贝
+	stack<TREENODE> tmp_sign(sign_stack);	// sign_state栈的临时拷贝
+	stack<int> reverse_state;	// 状态栈内容翻转，用于正序输出
+	stack<TREENODE>reverse_sign;	// 符号栈内容翻转，用于正序输出
+
+	// 翻转state栈和sign栈
+	while (!tmp_state.empty()) {
+		reverse_state.push(tmp_state.top());
+		tmp_state.pop();
+	}
+	while (!tmp_sign.empty()) {
+		reverse_sign.push(tmp_sign.top());
+		tmp_sign.pop();
+	}
+	// 然后正序输出
+	procedure_file << '#';
+	while (!reverse_state.empty()) {
+		procedure_file << reverse_state.top() << ',';
+		reverse_state.pop();
+	}
+	procedure_file << "\t\t";
+	while (!reverse_sign.empty()) {
+		procedure_file << reverse_sign.top().value;
+		reverse_sign.pop();
+	}
+}
+
+void Parser::analyseInputString()
+{
+	int id = 0;
+	lexical_file >> input;
+	state_stack.push(0);	// 从第0个状态开始分析
+	sign_stack.push(TREENODE(id++, '#'));
+	int read_pin = 0, step = 0;
+	procedure_file << "步骤\t\t状态\t\t符号\t\t输入串\t\tACTION\t\tGOTO" << endl;
+	procedure_file << "----------------------------------------------------------------------------------------" << endl;
+
+	/* 开始进行归约分析 */
+	while (sign_stack.top().value != 'S') {
+		int cur_state = state_stack.top();
+		char cur_input = input[read_pin++];
+
+		// 输出分析过程
+		writeAnalyzeProcedure(step); // step只在这里面使用，用于记录分析步数
+
+		// 确定下一状态
+		for (int j = 0; j < action_table[cur_state].size(); j++) {	// 遍历ACTION表的第i个状态的所有转移
+			char cur_char = action_table[cur_state][j].ch;
+			int next_state = action_table[cur_state][j].next_state;
+			if (cur_char == cur_input) {
+
+			}
+		}
+	}
+}
+
 void Parser::parseAnalyser(string grammar_file, string lexical_file, string items_file, string action_file, string first_set_file, string procedure_file)
 {
 	openFile(grammar_file, lexical_file, items_file, action_file, first_set_file, procedure_file);

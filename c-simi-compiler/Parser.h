@@ -31,6 +31,18 @@ typedef struct ACTION {
 }ACTION;
 
 
+/* 语法树结构体 */
+typedef struct TREENODE {
+	int id;		// 结点的唯一标识
+	char value;	// 字符值
+	int parent;	// 当前结点的父亲
+	vector<int> child;	// 当前结点的所有儿子
+	TREENODE(int id, char value) {	// 构造函数
+		this->id = id;
+		this->value = value;
+	}
+}TREENODE;
+
 class Parser {
 private:
 	/* 产生式相关变量 */
@@ -52,13 +64,18 @@ private:
 	vector<vector<ACTION>> action_table;	// action_table[i][j]表示状态i的第j个动作
 	int state_num;			// 表示一共有多少个状态，它的值应该等于items_num
 
+	/* 归约过程相关 */
+	stack<int> state_stack;		// 状态栈
+	stack<TREENODE> sign_stack;		// 符号栈
+	string input;	// 输入串，即词法分析器得出的结果
+
 	/* 文件读写相关 */
 	ifstream grammar_file;		// 文法文件
 	ifstream lexical_file;		// 词法分析器给出的分析结果
 	ofstream items_file;		// 项目集
 	ofstream action_file;		// ACTION表
 	ofstream first_set_file;	// 文法中所有非终结符的First集
-	ofstream procedure_file;	// 分析过程
+	ofstream procedure_file;	// 存储分析过程
 public:
 	int ifTerminal(char ch);	// 检查当前字符是否为终结符
 	void terminalInsert(char ch);	// 检查当前字符，并根据需要和字符属性放到非终结符或终结符集中
@@ -76,5 +93,7 @@ public:
 	void writeItems();	// 将生成好的项目集写入文件中
 	void getActionTable();	// 构造ACTION表
 	void writeActionTable();	// 将生成好的ACTION表写入文件中
+	void writeAnalyzeProcedure(int& step);	// 将分析过程写入文件
+	void analyseInputString();	// 分析词法分析器给出的输入串是否为该文法接受的串（即归约过程）
 	void parseAnalyser(string grammar_file, string lexical_file, string items_file, string action_file, string first_set_file, string procedure_file);	// 核心函数，用于语法分析
 };
