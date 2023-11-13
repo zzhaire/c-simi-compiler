@@ -169,7 +169,7 @@ void Parser::getClosure(int i)
 			for (int k = 0; k <= g_number; k++)
 				if (g_production[k].first == g_production[no].second[now]) {
 					ITEMS production;
-					production.no = k, production.now = 1;
+					production.no = k, production.now = 0;
 					for (int z = 0; z < outlooks.size(); z++) {
 						production.outlook = outlooks[z];
 						if (!inItem(production, i))	// 如果当前产生式不在项目中，则将其加入当前项目
@@ -229,7 +229,7 @@ void Parser::goToActions(set<char>symbol_set, int id)
 void Parser::getItemSet()
 {
 	// 第一个是拓广文法的
-	items[0].push_back({ 0,1,'#' });	
+	items[0].push_back({ 0,0,'#' });	
 	item_num++;
 	getClosure(0);
 
@@ -338,7 +338,23 @@ void Parser::analyseInputString()
 			char cur_char = action_table[cur_state][j].ch;
 			int next_state = action_table[cur_state][j].next_state;
 			if (cur_char == cur_input) {
+				if (next_state > 0) {	// 移进项目
+					procedure_file << "\t\ts" << next_state << endl;
+					sign_stack.push(TREENODE(id++, cur_char));
+					state_stack.push(next_state);
+				}
+				else if (next_state == 0) {	// 接受态
+					procedure_file << "\t\tAccept" << endl;
+					cout << "Accept" << endl;
+					return;
+				}
+				else {	// 归约项目
+					int no = -next_state;	// 得到归约使用的产生式的编号
+					int cnt = g_production[no].second.size() - 1;	// 需要连续出栈的符号和状态数
+					int child_nums = cnt;	// 该父结点拥有的孩子数
+					read_pin--;
 
+				}
 			}
 		}
 	}
