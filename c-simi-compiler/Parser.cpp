@@ -120,8 +120,8 @@ void Parser::writeFirst()
 			first_set_file << "FIRST(" << char(i) << ")={";
 			for (auto item : first[i])
 				first_set_file << char(item) << ",";
+			first_set_file << "}" << endl;
 		}
-		first_set_file << "}" << endl;
 	}
 }
 
