@@ -205,7 +205,7 @@ void Parser::goToActions(set<char>symbol_set, int id)
 		for (int j = 0; j < items[id].size(); j++) {	// 遍历项目中的每一条产生式，遇到当前字符后是否会转移
 			int no = items[id][j].no, now = items[id][j].now;
 			if (now_ch == g_production[no].second[now]) {	// 如果匹配，该产生式的圆点后移一位，展望符不变
-				production = { no,now, items[id][j].outlook };
+				production = { no,now + 1, items[id][j].outlook };
 				if (!inItem(production, item_num)) {	// 这里是item_num，其实就是新创建了一个项目
 					has_trans = true;
 					items[item_num].push_back(production);	// 把当前产生式放到新的项目中
@@ -243,7 +243,7 @@ void Parser::getItemSet()
 void Parser::writeItems()
 {
 	for (int i = 0; i < item_num; i++) {
-		items_file << "-------------------------I" << i + 1 << "-------------------------" << endl;
+		items_file << "-------------------------I" << i  << "-------------------------" << endl;
 		for (int j = 0; j < items[i].size(); j++) {
 			int no = items[i][j].no, now = items[i][j].now;
 			char symbol = g_production[no].first;
