@@ -1,41 +1,19 @@
-int a;
-int b;
-int program(int a, int b, int c)
+#include<iostream>
+int main()
 {
-	int i;
-	int j;
-	i = 0;
-	if (a > (b + c))
-	{
-		j = a + (b * c + 1);
+	int s , t ,u;
+	s = 0;
+	t = 100;
+	u = 1;
+	while(1){
+		s = s + u;
+		u = u + 1;
 	}
-	else
-	{
-		j = a;
+	if(s < 100){
+		s = s *100;
 	}
-	while (i <= 100)
-	{
-		i = j * 2;
-		j = i;
+	else{
+		s = s /100;
 	}
-	return i;
+	return 0;	
 }
-
-int demo(int a)
-{
-	a = a + 2;
-	return a * 2;
-}
-
-void main(void)
-{
-	int a;
-	int b;
-	int c;
-	a = 3;
-	b = 4;
-	c = 2;
-	a = program(a, b, demo(c));
-	return;
-}
-$

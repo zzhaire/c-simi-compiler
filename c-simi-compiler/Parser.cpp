@@ -329,7 +329,8 @@ void Parser::analyseInputString()
 	while (sign_stack.top().value != 'S') {
 		int cur_state = state_stack.top();
 		char cur_input = input[read_pin++];
-
+		bool actionFound = false;
+		
 		// 输出分析过程
 		writeAnalyzeProcedure(step); // step只在这里面使用，用于记录分析步数
 
@@ -338,6 +339,7 @@ void Parser::analyseInputString()
 			char cur_char = action_table[cur_state][j].ch;
 			int next_state = action_table[cur_state][j].next_state;
 			if (cur_char == cur_input) {
+				actionFound = true;
 				if (next_state > 0) {	// 移进项目
 					procedure_file << "\t\ts" << next_state << endl;
 					sign_stack.push(TREENODE(id++, cur_char));
@@ -354,12 +356,43 @@ void Parser::analyseInputString()
 					int child_nums = cnt;	// 该父结点拥有的孩子数
 					read_pin--;
 
+					// 连续出栈符号和状态
+					vector<TREENODE> nodes;
+					while (cnt--) {
+						nodes.push_back(sign_stack.top());
+						sign_stack.pop();
+						state_stack.pop();
+					}
+
+					// 建立父节点并添加到栈中
+					TREENODE parent(id++, g_production[no].first);
+					for (auto it = nodes.rbegin(); it != nodes.rend(); ++it) {
+						parent.child.push_back(it->id);
+					}
+					sign_stack.push(parent);
+
+
+					// 更新状态栈,根据GOTO表找到下一个状态
+					int next_parent_state = -1;
+					for (auto action : action_table[state_stack.top()]) {
+						if (action.ch == parent.value) {
+							next_parent_state = action.next_state;
+							break;
+						}
+					}
+					if (next_parent_state != -1) {
+						state_stack.push(next_parent_state);  // 压入下一个状态
+					}
+					else {
+						cout << "错误:找不到合适的GOTO动作." << endl;
+						return;
+					}
 				}
+				break;
 			}
 		}
 	}
 }
-
 void Parser::parseAnalyser(string grammar_file, string lexical_file, string items_file, string action_file, string first_set_file, string procedure_file)
 {
 	openFile(grammar_file, lexical_file, items_file, action_file, first_set_file, procedure_file);
@@ -370,8 +403,7 @@ void Parser::parseAnalyser(string grammar_file, string lexical_file, string item
 	writeItems();
 	getActionTable();
 	writeActionTable();
-
-	/* 待完善 */
+	//analyseInputString();
 
 	closeFile();
 }
