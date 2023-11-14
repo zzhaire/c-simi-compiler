@@ -315,7 +315,7 @@ void Parser::writeAnalyzeProcedure(int& step)
 	}
 }
 
-void Parser::analyseInputString()
+bool Parser::analyseInputString()
 {
 	int id = 0;
 	lexical_file >> input;
@@ -348,7 +348,7 @@ void Parser::analyseInputString()
 				else if (next_state == 0) {	// 接受态
 					procedure_file << "\t\tAccept" << endl;
 					cout << "Accept" << endl;
-					return;
+					return true;
 				}
 				else {	// 归约项目
 					int no = -next_state;	// 得到归约使用的产生式的编号
@@ -385,7 +385,7 @@ void Parser::analyseInputString()
 					}
 					else {
 						cout << "错误:找不到合适的GOTO动作." << endl;
-						return;
+						return false;
 					}
 				}
 				break;
@@ -393,9 +393,15 @@ void Parser::analyseInputString()
 		}
 	}
 }
-void Parser::parseAnalyser(string grammar_file, string lexical_file, string items_file, string action_file, string first_set_file, string procedure_file)
+bool Parser::parseAnalyser()
 {
-	openFile(grammar_file, lexical_file, items_file, action_file, first_set_file, procedure_file);
+	string grammar_file = "./grammers/parseGrammer.txt";
+	string lexical_file = "./products/LexicalProduct.txt";
+	string items_file = "./products/parseItems.txt";
+	string action_file = "./products/parseActionTable.txt";
+	string first_set_file = "./products/parseFirstSet.txt";
+	string parseProduct = "./products/parseProduct.txt";
+	openFile(grammar_file, lexical_file, items_file, action_file, first_set_file, parseProduct);
 	getGrammer();
 	getFirst();
 	writeFirst();
@@ -403,7 +409,8 @@ void Parser::parseAnalyser(string grammar_file, string lexical_file, string item
 	writeItems();
 	getActionTable();
 	writeActionTable();
-	//analyseInputString();
-
+	if (analyseInputString())
+		return true;
+	return false;
 	closeFile();
 }

@@ -192,13 +192,13 @@ bool Lexer::canReachFinal(string str)
 		return true;
 	return false;
 }
-void Lexer::inputFile(string file_name)
+bool Lexer::inputFile(string source_code)
 {
-	code = fopen(file_name.c_str(), "r+");
+	code = fopen(source_code.c_str(), "r+");
 	if (code == nullptr)
 	{
-		cout << "???" << file_name << "?????" << endl;
-		exit(0);
+		cout << "打开文件" << source_code << "失败" << endl;
+		return false;
 	}
 	char ch;
 	int ptr;
@@ -248,7 +248,10 @@ void Lexer::inputFile(string file_name)
 			if (isNum(info))
 				res.push_back({ info,NUM });
 			else
+			{
 				errorPrint(info, NUM);
+				return false;
+			}
 			ptr = 0;
 			keyFlag = -1;
 		}
@@ -273,8 +276,10 @@ void Lexer::inputFile(string file_name)
 			{
 				if (canReachFinal(info))
 					res.push_back({ info, ID });
-				else
+				else {
 					errorPrint(info, ID);
+					return false;
+				}
 			}
 			ptr = 0;
 			keyFlag = -1;
@@ -327,23 +332,20 @@ void Lexer::inputFile(string file_name)
 		memset(info, -1, sizeof info);
 	}
 	fclose(code);
+	return true;
 }
-void  Lexer::lexicalAnalyser(string file_name)
+bool  Lexer::lexicalAnalyser(string file_name)
 {
 	Init();
-	buildNFA("./LexicalGrammer.txt");
+	buildNFA("./grammers/LexicalGrammer.txt");
 	convertToDFA();
-	inputFile(file_name);
+	return inputFile(file_name);
 }
-bool Lexer::outputToFile(string file_src)
+bool Lexer::outputToFile()
 {
 	ofstream out;
-	out.open(file_src);
-	if (!out.is_open())
-	{
-		cout << "打开" << file_src << "文件失败" << endl;
-		return 0;
-	}
+	string const_file_src = "./products/LexicalProduct.txt";
+	out.open(const_file_src);
 	for (auto& e : res)
 		out << e.first << " " << WordTypeName[e.second] << endl;
 	out.close();

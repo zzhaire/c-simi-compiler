@@ -66,8 +66,8 @@ private:
 	void buildNFA(string grammer_file);
 	void convertToDFA();
 	bool canReachFinal(string str);
-	void inputFile(string file_name);
+	bool inputFile(string file_name);
 public:
-	void lexicalAnalyser(string file_name);
-	bool outputToFile(string file_src);
+	bool lexicalAnalyser(string file_name);
+	bool outputToFile();
 };
