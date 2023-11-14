@@ -332,7 +332,7 @@ void Parser::analyseInputString()
 		bool actionFound = false;
 		
 		// 输出分析过程
-		writeAnalyzeProcedure(step); // step只在这里面使用，用于记录分析步数
+		writeAnalyzeProcedure(step); // step只在这里面使用，用于记录分析步数 
 
 		// 确定下一状态
 		for (int j = 0; j < action_table[cur_state].size(); j++) {	// 遍历ACTION表的第i个状态的所有转移
@@ -352,9 +352,10 @@ void Parser::analyseInputString()
 				}
 				else {	// 归约项目
 					int no = -next_state;	// 得到归约使用的产生式的编号
-					int cnt = g_production[no].second.size() - 1;	// 需要连续出栈的符号和状态数
+					int cnt = g_production[no].second.size();	// 需要连续出栈的符号和状态数   - 1？
 					int child_nums = cnt;	// 该父结点拥有的孩子数
 					read_pin--;
+					procedure_file << "\t\t" << "r" << no << endl;
 
 					// 连续出栈符号和状态
 					vector<TREENODE> nodes;
@@ -389,10 +390,17 @@ void Parser::analyseInputString()
 					}
 				}
 				break;
+
+
 			}
 		}
 	}
 }
+
+
+
+
+
 void Parser::parseAnalyser(string grammar_file, string lexical_file, string items_file, string action_file, string first_set_file, string procedure_file)
 {
 	openFile(grammar_file, lexical_file, items_file, action_file, first_set_file, procedure_file);
@@ -403,7 +411,7 @@ void Parser::parseAnalyser(string grammar_file, string lexical_file, string item
 	writeItems();
 	getActionTable();
 	writeActionTable();
-	//analyseInputString();
+	analyseInputString();
 
 	closeFile();
 }

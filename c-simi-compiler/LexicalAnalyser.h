@@ -4,6 +4,7 @@
 using namespace std;
 /***********const****************/
 const int KN = 22;
+
 const string KEY_WORDS[KN] = {
 	"break", "case", "char", "continue",
 	"do", "default", "double", "else",
