@@ -287,7 +287,7 @@ void Parser::writeActionTable()
 
 void Parser::writeAnalyzeProcedure(int& step)
 {
-	procedure_file << step++ << "\t\t" << endl;
+	procedure_file << step++ << "\t\t" ;
 	stack<int> tmp_state(state_stack);	// state_stack栈的临时拷贝
 	stack<TREENODE> tmp_sign(sign_stack);	// sign_state栈的临时拷贝
 	stack<int> reverse_state;	// 状态栈内容翻转，用于正序输出
@@ -329,7 +329,7 @@ void Parser::analyseInputString()
 	while (sign_stack.top().value != 'S') {
 		int cur_state = state_stack.top();
 		char cur_input = input[read_pin++];
-		bool actionFound = false;
+		//bool actionFound = false;
 		
 		// 输出分析过程
 		writeAnalyzeProcedure(step); // step只在这里面使用，用于记录分析步数 
@@ -339,7 +339,7 @@ void Parser::analyseInputString()
 			char cur_char = action_table[cur_state][j].ch;
 			int next_state = action_table[cur_state][j].next_state;
 			if (cur_char == cur_input) {
-				actionFound = true;
+				//actionFound = true;
 				if (next_state > 0) {	// 移进项目
 					procedure_file << "\t\ts" << next_state << endl;
 					sign_stack.push(TREENODE(id++, cur_char));
@@ -352,8 +352,8 @@ void Parser::analyseInputString()
 				}
 				else {	// 归约项目
 					int no = -next_state;	// 得到归约使用的产生式的编号
-					int cnt = g_production[no].second.size();	// 需要连续出栈的符号和状态数   - 1？
-					int child_nums = cnt;	// 该父结点拥有的孩子数
+					int cnt = g_production[no].second.size();	// 需要连续出栈的符号和状态数
+					//int child_nums = cnt;	// 该父结点拥有的孩子数
 					read_pin--;
 					procedure_file << "\t\t" << "r" << no << endl;
 
@@ -369,9 +369,14 @@ void Parser::analyseInputString()
 					TREENODE parent(id++, g_production[no].first);
 					for (auto it = nodes.rbegin(); it != nodes.rend(); ++it) {
 						parent.child.push_back(it->id);
+						it->parent = parent.id;
 					}
 					sign_stack.push(parent);
-
+					if (parent.value == 'P') {
+						//说明是最后一次归约
+						nodes.push_back(parent);
+					}
+					//nodes.push_back(parent);
 
 					// 更新状态栈,根据GOTO表找到下一个状态
 					int next_parent_state = -1;
@@ -385,6 +390,14 @@ void Parser::analyseInputString()
 						state_stack.push(next_parent_state);  // 压入下一个状态
 					}
 					else {
+						//cout << "parent.value   " << parent.value << "  top  " << state_stack.top() << endl;
+						for (auto action : action_table[state_stack.top()]) {
+							//cout << "1  " << action.ch << "  2  " << action.next_state << endl;
+							if (action.ch == parent.value) {
+								next_parent_state = action.next_state;
+								break;
+							}
+						}
 						cout << "错误:找不到合适的GOTO动作." << endl;
 						return;
 					}
@@ -396,8 +409,6 @@ void Parser::analyseInputString()
 		}
 	}
 }
-
-
 
 
 
