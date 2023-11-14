@@ -362,3 +362,8 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 c-simi-compiler.code-workspace
+/c-simi-compiler/procedure.txt
+/c-simi-compiler/items.txt
+/c-simi-compiler/first_set.txt
+/c-simi-compiler/action.txt
+/c-simi-compiler/grammar.txt
