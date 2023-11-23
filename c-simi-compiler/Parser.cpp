@@ -318,7 +318,8 @@ void Parser::writeAnalyzeProcedure(int& step)
 bool Parser::analyseInputString()
 {
 	ifstream lexical_output;
-	lexical_output.open("lexical_output.txt");
+	//lexical_output.open("./grammers/LexicalGrammerProduct.txt");
+	lexical_output.open("./lexical_output.txt");
 	int id = 0;
 	lexical_output >> input;
 	state_stack.push(0);	// 从第0个状态开始分析
@@ -412,8 +413,14 @@ bool Parser::analyseInputString()
 	}
 }
 
-void Parser::parseAnalyser(string grammar_file, string lexical_file, string items_file, string action_file, string first_set_file, string procedure_file)
+void Parser::parseAnalyser()
 {
+	string grammar_file = "./grammers/parseGrammar.txt";
+	string lexical_file = "./products/LexicalProduct.txt";
+	string items_file = "./products/itemsResult.txt";
+	string action_file = "./products/actionResult.txt";
+	string first_set_file = "./products/firstSet.txt";
+	string procedure_file = "./products/ParseProduct.txt";
 	openFile(grammar_file, lexical_file, items_file, action_file, first_set_file, procedure_file);
 	getGrammer();
 	getFirst();
@@ -422,8 +429,6 @@ void Parser::parseAnalyser(string grammar_file, string lexical_file, string item
 	writeItems();
 	getActionTable();
 	writeActionTable();
-
 	analyseInputString();
-
 	closeFile();
 }

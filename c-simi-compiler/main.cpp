@@ -8,17 +8,22 @@ int main(int argc, char** argv)
 {
 	if (argc == 1)
 	{
-		cout << "使用方法:" << argv[0] << " "<< "编译文件路径  词法分析结果路径  语法格式文件  项目集结果文件  ACTION表文件  FIRST集文件    语法分析过程文件" << endl;
-		cout << "例如:    " << argv[0] << " "<< "text.cpp      product.txt       grammar.txt   items.txt       action.txt    first_set.txt  procedure.txt" << endl;
+		cout << "使用方法:" << argv[0] << " " << "编译文件路径" << endl;
+		cout << "例如:    " << argv[0] << " " << "text.cpp" << endl;
 		return 0;
 	}
-	LX.lexicalAnalyser(argv[1]);
-	LX.outputToFile(argv[2]);
+	if (!LX.lexicalAnalyser(argv[1]))
+	{
+		cout << "词法分析出错" << endl;
+		return 0;
+	}
+	else {
+		cout << "词法分析通过" << endl;
+		if (LX.outputToFile())
+			cout << "在./products/LexicalProduct.txt中查看" << endl;
+	}
 
-	PS.parseAnalyser(argv[3], argv[2], argv[4], argv[5], argv[6], argv[7]);
+	PS.parseAnalyser();
 	
-
-	if (LX.outputToFile(argv[2]))
-		cout << "生成成功,请在" << argv[2] << "中查看" << endl;
 	return 0;
 }

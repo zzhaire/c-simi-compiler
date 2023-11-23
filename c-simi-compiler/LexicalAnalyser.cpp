@@ -30,6 +30,13 @@ void Lexer::Init()
 	lexer_map["("] = LPAREN;
 	lexer_map[")"] = RPAREN;
 	// 集合
+	int cnt = 0;
+	char bg = 'a';
+	for (int i = 0; i < 26 && cnt < KN; i++)
+		key_words_map[KEY_WORDS[cnt++]] = bg++;
+	bg = 'A';
+	for (int i = 0; i < 26 && cnt < KN; i++)
+		key_words_map[KEY_WORDS[cnt++]] = bg++;
 	for (int i = 0; i < KN; i++)
 		key_words.insert(KEY_WORDS[i]);
 	// 初始化单目运算符集合
@@ -192,13 +199,16 @@ bool Lexer::canReachFinal(string str)
 		return true;
 	return false;
 }
-void Lexer::inputFile(string file_name)
+bool Lexer::inputFile(string source_code)
 {
-	code = fopen(file_name.c_str(), "r+");
+	ofstream Grammer;
+	Grammer.open("./grammers/LexicalGrammerProduct.txt");
+	//cout << "Grammer:" << Grammer.is_open();
+	code = fopen(source_code.c_str(), "r+");
 	if (code == nullptr)
 	{
-		cout << "???" << file_name << "?????" << endl;
-		exit(0);
+		cout << "打开文件" << source_code << "失败" << endl;
+		return false;
 	}
 	char ch;
 	int ptr;
@@ -245,10 +255,16 @@ void Lexer::inputFile(string file_name)
 		}
 		if (keyFlag == 1)
 		{
-			if (isNum(info))
+			if (isNum(info)) {
 				res.push_back({ info,NUM });
+				Grammer << 3;
+
+			}
 			else
+			{
 				errorPrint(info, NUM);
+				return false;
+			}
 			ptr = 0;
 			keyFlag = -1;
 		}
@@ -267,14 +283,20 @@ void Lexer::inputFile(string file_name)
 		}
 		if (keyFlag == 2)
 		{
-			if (isKeyWord(info))
+			if (isKeyWord(info)) {
 				res.push_back({ info, lexer_map[info] });
+				Grammer << key_words_map[info];
+			}
 			else
 			{
-				if (canReachFinal(info))
+				if (canReachFinal(info)) {
 					res.push_back({ info, ID });
-				else
+					Grammer << 2;
+				}
+				else {
 					errorPrint(info, ID);
+					return false;
+				}
 			}
 			ptr = 0;
 			keyFlag = -1;
@@ -283,6 +305,10 @@ void Lexer::inputFile(string file_name)
 		{
 			string tmp = charToString(ch);
 			res.push_back({ tmp, lexer_map[tmp] });
+			if (ch == '#')
+				Grammer << '*';
+			else
+				Grammer << ch;
 			if ((ch = fgetc(code)) == EOF)
 			{
 				overFlag = true;
@@ -301,12 +327,14 @@ void Lexer::inputFile(string file_name)
 			if (overFlag == false && isBiOperator(info))
 			{
 				res.push_back({ info, lexer_map[info] });
+				Grammer << 4;
 				ch = fgetc(code);
 			}
 			else
 			{
 				string tmp = charToString(info[0]);
 				res.push_back({ tmp, lexer_map[tmp] });
+				Grammer << info[0];
 			}
 			ptr = 0;
 		}
@@ -326,24 +354,22 @@ void Lexer::inputFile(string file_name)
 		}
 		memset(info, -1, sizeof info);
 	}
+	Grammer << '#';
 	fclose(code);
+	return true;
 }
-void  Lexer::lexicalAnalyser(string file_name)
+bool  Lexer::lexicalAnalyser(string file_name)
 {
 	Init();
-	buildNFA("./LexicalGrammer.txt");
+	buildNFA("./grammers/LexicalGrammer.txt");
 	convertToDFA();
-	inputFile(file_name);
+	return inputFile(file_name);
 }
-bool Lexer::outputToFile(string file_src)
+bool Lexer::outputToFile()
 {
 	ofstream out;
-	out.open(file_src);
-	if (!out.is_open())
-	{
-		cout << "打开" << file_src << "文件失败" << endl;
-		return 0;
-	}
+	string const_file_src = "./products/LexicalProduct.txt";
+	out.open(const_file_src);
 	for (auto& e : res)
 		out << e.first << " " << WordTypeName[e.second] << endl;
 	out.close();

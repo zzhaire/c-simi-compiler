@@ -4,6 +4,7 @@
 using namespace std;
 /***********const****************/
 const int KN = 22;
+
 const string KEY_WORDS[KN] = {
 	"break", "case", "char", "continue",
 	"do", "default", "double", "else",
@@ -40,6 +41,7 @@ private:
 	// 文件属性
 	FILE* code = NULL;
 	map<string, Token> lexer_map;
+	map<string, char>key_words_map;
 	vector<Word> res;  // typedef pair<string,WordType> Word;
 
 	char DFA_start_state;	// 初始态是一个字符
@@ -66,8 +68,8 @@ private:
 	void buildNFA(string grammer_file);
 	void convertToDFA();
 	bool canReachFinal(string str);
-	void inputFile(string file_name);
+	bool inputFile(string file_name);
 public:
-	void lexicalAnalyser(string file_name);
-	bool outputToFile(string file_src);
+	bool lexicalAnalyser(string file_name);
+	bool outputToFile();
 };
