@@ -318,8 +318,8 @@ void Parser::writeAnalyzeProcedure(int& step)
 bool Parser::analyseInputString()
 {
 	ifstream lexical_output;
-	//lexical_output.open("./grammers/LexicalGrammerProduct.txt");
-	lexical_output.open("./lexical_output.txt");
+	lexical_output.open("./grammers/LexicalGrammerProduct.txt");
+	//lexical_output.open("./lexical_output.txt");
 	int id = 0;
 	lexical_output >> input;
 	state_stack.push(0);	// 从第0个状态开始分析
