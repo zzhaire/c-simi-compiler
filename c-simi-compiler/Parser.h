@@ -94,6 +94,6 @@ public:
 	void getActionTable();	// 构造ACTION表
 	void writeActionTable();	// 将生成好的ACTION表写入文件中
 	void writeAnalyzeProcedure(int& step);	// 将分析过程写入文件
-	void analyseInputString();	// 分析词法分析器给出的输入串是否为该文法接受的串（即归约过程）
+	bool analyseInputString();	// 分析词法分析器给出的输入串是否为该文法接受的串（即归约过程）
 	void parseAnalyser(string grammar_file, string lexical_file, string items_file, string action_file, string first_set_file, string procedure_file);	// 核心函数，用于语法分析
 };

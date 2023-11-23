@@ -315,10 +315,12 @@ void Parser::writeAnalyzeProcedure(int& step)
 	}
 }
 
-void Parser::analyseInputString()
+bool Parser::analyseInputString()
 {
+	ifstream lexical_output;
+	lexical_output.open("lexical_output.txt");
 	int id = 0;
-	lexical_file >> input;
+	lexical_output >> input;
 	state_stack.push(0);	// 从第0个状态开始分析
 	sign_stack.push(TREENODE(id++, '#'));
 	int read_pin = 0, step = 0;
@@ -329,15 +331,17 @@ void Parser::analyseInputString()
 	while (sign_stack.top().value != 'S') {
 		int cur_state = state_stack.top();
 		char cur_input = input[read_pin++];
+		//bool actionFound = false;
 
 		// 输出分析过程
-		writeAnalyzeProcedure(step); // step只在这里面使用，用于记录分析步数
+		writeAnalyzeProcedure(step); // step只在这里面使用，用于记录分析步数 
 
 		// 确定下一状态
 		for (int j = 0; j < action_table[cur_state].size(); j++) {	// 遍历ACTION表的第i个状态的所有转移
 			char cur_char = action_table[cur_state][j].ch;
 			int next_state = action_table[cur_state][j].next_state;
 			if (cur_char == cur_input) {
+				//actionFound = true;
 				if (next_state > 0) {	// 移进项目
 					procedure_file << "\t\ts" << next_state << endl;
 					sign_stack.push(TREENODE(id++, cur_char));
@@ -346,15 +350,63 @@ void Parser::analyseInputString()
 				else if (next_state == 0) {	// 接受态
 					procedure_file << "\t\tAccept" << endl;
 					cout << "Accept" << endl;
-					return;
+					return true;
 				}
 				else {	// 归约项目
 					int no = -next_state;	// 得到归约使用的产生式的编号
-					int cnt = g_production[no].second.size() - 1;	// 需要连续出栈的符号和状态数
-					int child_nums = cnt;	// 该父结点拥有的孩子数
+					int cnt = g_production[no].second.size();	// 需要连续出栈的符号和状态数
+					//int child_nums = cnt;	// 该父结点拥有的孩子数
 					read_pin--;
+					procedure_file << "\t\t" << "r" << no << endl;
 
+					// 连续出栈符号和状态
+					vector<TREENODE> nodes;
+					while (cnt--) {
+						nodes.push_back(sign_stack.top());
+						sign_stack.pop();
+						state_stack.pop();
+					}
+
+					// 建立父节点并添加到栈中
+					TREENODE parent(id++, g_production[no].first);
+					for (auto it = nodes.rbegin(); it != nodes.rend(); ++it) {
+						parent.child.push_back(it->id);
+						it->parent = parent.id;
+					}
+					sign_stack.push(parent);
+					if (parent.value == 'P') {
+						//说明是最后一次归约
+						nodes.push_back(parent);
+					}
+					//nodes.push_back(parent);
+
+					// 更新状态栈,根据GOTO表找到下一个状态
+					int next_parent_state = -1;
+					for (auto action : action_table[state_stack.top()]) {
+						if (action.ch == parent.value) {
+							next_parent_state = action.next_state;
+							break;
+						}
+					}
+					if (next_parent_state != -1) {
+						state_stack.push(next_parent_state);  // 压入下一个状态
+					}
+					else {
+						//cout << "parent.value   " << parent.value << "  top  " << state_stack.top() << endl;
+						for (auto action : action_table[state_stack.top()]) {
+							//cout << "1  " << action.ch << "  2  " << action.next_state << endl;
+							if (action.ch == parent.value) {
+								next_parent_state = action.next_state;
+								break;
+							}
+						}
+						cout << "错误:找不到合适的GOTO动作." << endl;
+						return false;
+					}
 				}
+				break;
+
+
 			}
 		}
 	}
@@ -371,7 +423,7 @@ void Parser::parseAnalyser(string grammar_file, string lexical_file, string item
 	getActionTable();
 	writeActionTable();
 
-	/* 待完善 */
+	analyseInputString();
 
 	closeFile();
 }
