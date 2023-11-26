@@ -9,7 +9,7 @@ int main(int argc, char** argv)
 	if (argc == 1)
 	{
 		cout << "使用方法:" << argv[0] << " " << "编译文件路径" << endl;
-		cout << "例如:    " << argv[0] << " " << "text.cpp" << endl;
+		cout << "例如:    " << argv[0] << " " << "text.txt" << endl;
 		return 0;
 	}
 	if (!LX.lexicalAnalyser(argv[1]))

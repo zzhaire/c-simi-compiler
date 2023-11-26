@@ -350,7 +350,7 @@ bool Parser::analyseInputString()
 				}
 				else if (next_state == 0) {	// 接受态
 					procedure_file << "\t\tAccept" << endl;
-					cout << "Accept" << endl;
+					cout << "语法分析通过\n在./products下查看表达式产生文件" << endl;
 					return true;
 				}
 				else {	// 归约项目
