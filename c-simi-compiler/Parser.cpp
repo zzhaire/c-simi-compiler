@@ -336,9 +336,9 @@ bool Parser::analyseInputString()
 
 		// 输出分析过程
 		writeAnalyzeProcedure(step); // step只在这里面使用，用于记录分析步数 
-
+		int j;
 		// 确定下一状态
-		for (int j = 0; j < action_table[cur_state].size(); j++) {	// 遍历ACTION表的第i个状态的所有转移
+		for ( j= 0; j < action_table[cur_state].size(); j++) {	// 遍历ACTION表的第i个状态的所有转移
 			char cur_char = action_table[cur_state][j].ch;
 			int next_state = action_table[cur_state][j].next_state;
 			if (cur_char == cur_input) {
@@ -409,6 +409,16 @@ bool Parser::analyseInputString()
 
 
 			}
+		}
+		if (j == action_table[cur_state].size())
+		{
+			cout << "ERROR!所给程序不能被编译器接受！" << endl;
+			cout << "可能是缺少:\n";
+			for (int i = 0; i < action_table[cur_state].size(); i++) {
+				cout << action_table[cur_state][i].ch << " ";
+			}
+			cout << endl;
+			exit(-1);
 		}
 	}
 }
